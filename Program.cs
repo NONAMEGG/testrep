@@ -1,10 +1,10 @@
-﻿namespace SAOD_HW_1
+namespace ConsoleApp3
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            int count = 0;
+            Stack<int> symbList = new Stack<int>();
             Console.Write("Введите количество строк матрицы: ");
             int n = Convert.ToInt32(Console.ReadLine());
 
@@ -18,6 +18,7 @@
             int k = Convert.ToInt32(Console.ReadLine());
 
             char[,] data = generate(n, m, k);
+
 
             for (int i = 0; i < n; i++)
             {
@@ -34,21 +35,18 @@
             Console.Write("Введите координату заливки(y): ");
             int y = Convert.ToInt32(Console.ReadLine());
 
-            fill(x, y, symb, n, m, data);
+
+            betterFill(symbList, x, y, n, m, data, symb);
+            //fill(x, y, symb, n, m, data);
 
             for (int i = 0; i < n; i++)
             {
                 for (int j = 0; j < m; j++)
                 {
-                    Console.Write(data[i, j] + " ");
-                    if (data[i, j] == symb)
-                    {
-                        count++;
-                    }
+                    Console.Write(data[i, j]);
                 }
                 Console.WriteLine();
             }
-            Console.WriteLine("Количество замененных символов: " + count);
 
         }
 
@@ -74,9 +72,44 @@
             }
             return data;
         }
+
+        static void betterFill(Stack<int> symbList, int x, int y, int n, int m, char[,] data, char symb)
+        {
+            symbList.Push(x);
+            symbList.Push(y);
+            while (symbList.Count > 0)
+            {
+
+                y = symbList.Pop(); x = symbList.Pop();
+                if (x >= 0 && y >= 0 && x < n && y < m && data[x, y] == ' ')
+                {
+                    data[x, y] = symb;
+                    if (x > 0)
+                    {
+                        symbList.Push(x - 1);
+                        symbList.Push(y);
+                    }
+                    if (x < n - 1)
+                    {
+                        symbList.Push(x + 1);
+                        symbList.Push(y);
+                    }
+                    if (y > 0)
+                    {
+                        symbList.Push(x);
+                        symbList.Push(y - 1);
+                    }
+                    if (y < m - 1)
+                    {
+                        symbList.Push(x);
+                        symbList.Push(y + 1);
+                    }
+                }
+            }
+        }
         static void fill(int x, int y, char symb, int n, int m, char[,] data)
         {
-            if (x < n && y < m && x >= 0 && y >= 0 && data[x, y] == ' ')
+            if (x >= 0 && y >= 0 && x < n && y < m && data[x, y] == ' ')
             {
                 data[x, y] = symb;
                 fill(x - 1, y, symb, n, m, data);
