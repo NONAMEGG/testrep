@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,15 +23,14 @@ namespace ConsoleApp3
 
         public void Push(T o)
         {
-            int _size = size;
-            size++;
             if (size == array.Length)
             {
                 T[] newArray = new T[array.Length * 2];
-                Array.Copy(array, 0, newArray, 0, size);
+                Array.Copy(array, newArray, size);
                 array = newArray;
             }
-            array[_size] = o;
+            array[size] = o;
+            size++;
         }
 
         public T Pop()
@@ -40,8 +39,8 @@ namespace ConsoleApp3
             {
                 throw new Exception("Cant Pop, stack is empty");   
             }
-            T o = array[size];
             size--;
+            T o = array[size];
             return o;
         }
 
