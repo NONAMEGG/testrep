@@ -4,7 +4,7 @@ namespace ConsoleApp3
     {
         static void Main(string[] args)
         {
-            Stack<int> symbList = new Stack<int>();
+            MyStack<int> symbList = new MyStack<int>();
             Console.Write("Введите количество строк матрицы: ");
             int n = Convert.ToInt32(Console.ReadLine());
 
@@ -73,12 +73,13 @@ namespace ConsoleApp3
             return data;
         }
 
-        static void betterFill(Stack<int> symbList, int x, int y, int n, int m, char[,] data, char symb)
+        static void betterFill(MyStack<int> symbList, int x, int y, int n, int m, char[,] data, char symb)
         {
             symbList.Push(x);
             symbList.Push(y);
             while (symbList.Count > 0)
             {
+               
 
                 y = symbList.Pop(); x = symbList.Pop();
                 if (x >= 0 && y >= 0 && x < n && y < m && data[x, y] == ' ')
