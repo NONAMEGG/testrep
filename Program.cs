@@ -1,4 +1,4 @@
-﻿using System.Xml.Linq;
+using System.Xml.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections;
@@ -26,15 +26,26 @@ namespace LlistProject
 
         public class SLList<T> : IEnumerable<T>
         {
-            public Node<T> head;
-            public Node<T> CurElement;
+            public Node<T> root;
+            public Node<T> sentinel;
+            public Node<T> service = new Node<T>(default);
             int size = 0;
+
             public int Count { get { return size; } }
+
+            public SLList()
+            {
+                root = new Node<T>(default);
+                sentinel = new Node<T>(default);
+                service.next = null;
+                sentinel.next = service;
+                root.next = service;
+            }
 
             public T this[int index] {
                 get
                 {
-                    var element = head;
+                    var element = root;
                     int count = 0;
 
                     for (int i = 0; i < size; i++)
@@ -51,17 +62,10 @@ namespace LlistProject
                 }
                 set 
                 {
-                    if (index == size - 1)
-                    {
-                        
-                        return;
-                    }
-
                     int count = 0;
-                    var element = head;
+                    var element = root;
                     for (int i = 0; i < size; i++)
                     {
-                        
                         if (count == index)
                         {
                             element.data = value;
@@ -74,37 +78,33 @@ namespace LlistProject
 
             public bool Empty()
             {
-                if(head != null)
-                {
-                    return false;
-                }
-                return true;
+                return size == 0;
             }
 
             public void Clear()
             {
-                var element = head;
+                var element = root;
                 Node<T> temp = null;
 
-                head = null;
-                while (element.next != default)
+                root = new Node<T>(default);
+                root.next = service;
+                while (element.next != sentinel.next)
                 {
                     temp = element.next;
                     element = null;
                     element = temp;
                 }
                 size = 0;
-                CurElement = default;
             }
 
             public T First()
             {
-                return head.data;
+                return root.data;
             }
 
             public T Last()
             {
-                var element = head;
+                var element = root;
                 for (int i = 0; i < size-1; i++)
                 {
                     element = element.next;
@@ -117,22 +117,24 @@ namespace LlistProject
             public void PushBack(T value)
             {
                 size++;
-                if (CurElement == default)
+                if (size == 1)
                 {
-                    head = new Node<T>(value);
-                    CurElement = head;
-                    CurElement.next = new Node<T>(default);
+                    root = new Node<T>(value);
+                    root.next = service;
                     return;
                 }
 
-                CurElement.next = new Node<T>(value);
-                CurElement = CurElement.next;
-                CurElement.next = new Node<T>(default);
+                var element = root;
+                while(element.next != sentinel.next)
+                {
+                    element = element.next;
+                }
+                element.next = new Node<T>(value, service);
             }
 
             public void PushFront(T value)
             {
-                head = new Node<T>(value, head);
+                root = new Node<T>(value, root);
                 size++;
             }
 
@@ -151,7 +153,7 @@ namespace LlistProject
                 }
 
                 int count = 0;
-                var element = head;
+                var element = root;
                 Node<T> prevel;
                 while (element.next != default)
                 {
@@ -175,14 +177,13 @@ namespace LlistProject
                 }
                 size--;
 
-                CurElement.next = null;
-                CurElement = new Node<T>(default);
-                var element = head;
-                while(element.next != default)
+                var element = root;
+                while (element.next != sentinel.next)
                 {
-                    CurElement = element;
                     element = element.next;
                 }
+                element = service;
+                element.next = default;
             }
 
             public void PopFront()
@@ -191,9 +192,9 @@ namespace LlistProject
                 {
                     throw new Exception("Empty List Exception");
                 }
-                var temp = head;
-                head = null;
-                head = temp.next;
+                var temp = root;
+                root = null;
+                root = temp.next;
                 temp = null;
                 size--;
             }
@@ -213,10 +214,10 @@ namespace LlistProject
 
                 size--;
                 int count = 0;
-                var element = head;
+                var element = root;
                 Node<T> prevel;
                 Node<T> curel;
-                while (element.next != default)
+                while (element.next != sentinel.next)
                 {
                     count++;
                     prevel = element;
@@ -239,8 +240,13 @@ namespace LlistProject
 
             public IEnumerator<T> GetEnumerator()
             {
+                var element = root;
                 for (int i = 0; i < size; i++)
-                    yield return this[i];
+                {
+                    yield return element.data;
+                    element = element.next;
+                }
+                    
             }
         }
 
@@ -256,15 +262,13 @@ namespace LlistProject
                     Console.Write(l[i] + " -> ");
                 }
                 Console.WriteLine();
-                // вывод списка на экран с помощью l[i], метод доступа get 
             }
 
             var lst = new SLList<char>(); // ваш список
             Console.WriteLine(lst.Count + " " + lst.Empty());
 
-            for (int i = 0; i < 5; i++)
+           for (int i = 0; i < 5; i++)
                 lst.PushBack((char)(i + 97));
-
             print_lst(lst);
 
             for (int i = 0; i < 5; i++)
@@ -280,8 +284,8 @@ namespace LlistProject
 
             print_lst(lst);
 
-            lst.RemoveAt(5);
-            lst.Insert(3, 'o');
+             lst.RemoveAt(5);
+             lst.Insert(3, 'o');
 
             print_lst(lst);
 
@@ -300,55 +304,6 @@ namespace LlistProject
             {
                 Console.WriteLine(el);
             }
-            /*            *//* SLList<int> llist = new SLList<int>();*//*
-                         llist.PushBack(1);
-                         llist.PushBack(2);
-                         llist.PushBack(3);
-                         llist.Insert(3, 52);
-                         llist.PushFront(34);*/
-
-
-
-            /*             var cur = llist.head;
-                         for(int i = 0; i < llist.Count; i++)
-                         {
-                             Console.Write(cur.data + " -> ");
-                             if (cur.next == default)
-                             {
-                                 break;
-                             }
-                             cur = cur.next;
-                         }
-             */
-            /*            for (int i = 0; i < 4; i++)
-                        {
-                            Console.Write(cur.data + " -> ");
-                            if (cur.next == null)
-                            {
-                                break;
-                            }
-                            cur = cur.next;
-                        }*/
-
-            /*llist.head = new Node(1);
-            Node n1 = new Node(2);
-            Node n2 = new Node(3);
-
-            llist.head.next = n1;
-            n2.next = null;
-
-            Node curr = llist.head;
-            for(int i = 0; i < 10; i++)
-            {
-                Console.Write(curr.data + " -> ");
-                if (curr.next == null)
-                {
-                    break;
-                }
-                curr = curr.next;
-            }
-            Console.WriteLine();*/
-
         }
     }
 }
