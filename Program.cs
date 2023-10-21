@@ -2,6 +2,9 @@ using System.Xml.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections;
+using System.Drawing;
+using System.Runtime.Serialization;
+using System.Reflection.Metadata.Ecma335;
 
 namespace LlistProject
 {
@@ -12,15 +15,115 @@ namespace LlistProject
         {
             public T data;
             public Node<T> next;
-            public Node(T value) 
+            public Node<T> prev;
+            public Node(T value)
             {
                 data = value;
+                prev = default;
                 next = default;
+            }
+
+            public Node(T value, Node<T> Previous, Node<T> Next = default)
+            {
+                data = value;
+                prev = Previous;
+                next = Next;
             }
 
             public Node(T data, Node<T> next) : this(data)
             {
                 this.next = next;
+            }
+        }
+
+        public class DLList<T> : IEnumerable<T>
+        {
+            public Node<T> root;
+            public Node<T> tail;
+            int size = 0;
+
+            public int Count { get { return size; } }
+
+            public void Add(T value)
+            {
+                size++;
+
+                if (size == 1)
+                {
+                    tail = new Node<T>(default);
+                    root = new Node<T>(value, tail);
+                    tail.prev = root;
+                    return;
+                }
+                else if (size == 2)
+                {
+                    tail.data = value;
+                    return;
+                }
+
+                var temp = tail;
+                tail = new Node<T>(value, temp, default);
+                temp.next = tail;
+
+            }
+
+            public void Insert(T value, int index)
+            {
+                size++;
+                if (index == 0)
+                {
+                    var temp = root;
+                    root = new Node<T>(value, temp);
+                    return;
+                }
+                else if (index > size)
+                {
+                    throw new StackOverflowException();
+                }
+
+                if (index <= (size) / 2)
+                {
+                    int count = 0;
+                    var element = root;
+                    while (count != index)
+                    {
+                        element = element.next;
+                        count++;
+                    }
+                    Node<T> temp = new Node<T>(value, element.prev, element);
+                    element.prev.next = temp;
+                    element.prev = temp;
+
+                }
+                else
+                {
+                    int count = size - 1;
+                    var element = tail;
+                    while (count != index)
+                    {
+                        count--;
+                        element = element.prev;
+                    }
+                    Node<T> temp = new Node<T>(value, element, element.next);
+                    element.next = temp;
+                }
+            }
+
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public IEnumerator<T> GetEnumerator()
+            {
+                var element = root;
+                for (int i = 0; i < size; i++)
+                {
+                    yield return element.data;
+                    element = element.next;
+                }
+
             }
         }
 
@@ -42,7 +145,8 @@ namespace LlistProject
                 root.next = service;
             }
 
-            public T this[int index] {
+            public T this[int index]
+            {
                 get
                 {
                     var element = root;
@@ -56,11 +160,11 @@ namespace LlistProject
                         }
                         element = element.next;
                         count++;
-                        
-                    } 
+
+                    }
                     throw new Exception("Index was out of range");
                 }
-                set 
+                set
                 {
                     int count = 0;
                     var element = root;
@@ -74,7 +178,8 @@ namespace LlistProject
                         count++;
                         element = element.next;
                     }
-                } }
+                }
+            }
 
             public bool Empty()
             {
@@ -105,7 +210,7 @@ namespace LlistProject
             public T Last()
             {
                 var element = root;
-                for (int i = 0; i < size-1; i++)
+                for (int i = 0; i < size - 1; i++)
                 {
                     element = element.next;
                     element = element;
@@ -125,7 +230,7 @@ namespace LlistProject
                 }
 
                 var element = root;
-                while(element.next != sentinel.next)
+                while (element.next != sentinel.next)
                 {
                     element = element.next;
                 }
@@ -140,12 +245,12 @@ namespace LlistProject
 
             public void Insert(int index, T value)
             {
-                if (index == size)
+                if (index == -1)
                 {
                     PushBack(value);
                     return;
                 }
-                
+
                 if (index == 0)
                 {
                     PushFront(value);
@@ -162,11 +267,12 @@ namespace LlistProject
                     element = element.next;
                     if (count == index)
                     {
-                        Node<T> temp = new Node<T>(value, element.next);
-                        prevel.next = temp; 
+                        Node<T> temp = new Node<T>(value, element);
+                        prevel.next = temp;
                         break;
                     }
                 }
+                size++;
             }
 
             public void PopBack()
@@ -205,7 +311,7 @@ namespace LlistProject
                 {
                     throw new Exception("Empty List Exception");
                 }
-                
+
                 if (index == 0)
                 {
                     PopFront();
@@ -229,7 +335,7 @@ namespace LlistProject
                         curel = null;
                         break;
                     }
-                    
+
                 }
             }
 
@@ -246,64 +352,49 @@ namespace LlistProject
                     yield return element.data;
                     element = element.next;
                 }
-                    
+
             }
         }
 
-        
-
-
         static void Main(string[] args)
         {
-            void print_lst(SLList<char> l)
+            System.Diagnostics.Stopwatch watch;
+
+            SLList<int> sl = new SLList<int>();
+            DLList<int> dl = new DLList<int>();
+
+            Random rnd = new Random(1);
+
+            long elapsedMs;
+            int n = 20000;
+
+            int[] A = new int[n];
+            for (int i = 0, count = n; i < n; i++, count++)
+                A[i] = rnd.Next(0, count);
+
+            for (int i = 0; i < n; i++)
             {
-                for (int i = 0; i < l.Count; i++)
-                {
-                    Console.Write(l[i] + " -> ");
-                }
-                Console.WriteLine();
+                dl.Add(i);
+                sl.PushBack(i);
             }
 
-            var lst = new SLList<char>(); // ваш список
-            Console.WriteLine(lst.Count + " " + lst.Empty());
-
-           for (int i = 0; i < 5; i++)
-                lst.PushBack((char)(i + 97));
-            print_lst(lst);
-
-            for (int i = 0; i < 5; i++)
-                lst.Insert(0, (char)(122 - i));
-            print_lst(lst);
-
-            for (int i = 0; i < lst.Count; i++)
-                lst[i] = (char)(i + 97); // методы доступа set
-            print_lst(lst);
-
-            lst.PopBack();
-            lst.PopFront();
-
-            print_lst(lst);
-
-             lst.RemoveAt(5);
-             lst.Insert(3, 'o');
-
-            print_lst(lst);
-
-            lst.Clear();
-
-            lst.PushBack('q');
-            lst.PushFront('a');
-            lst.PushBack('w');
-
-            print_lst(lst);
-
-            Console.WriteLine(lst.First() + " " + lst.Last());
-            Console.WriteLine(lst.Count + " " + lst.Empty());
-
-            foreach(var el in lst)
+            watch = System.Diagnostics.Stopwatch.StartNew();
+            for (int i = 0; i < n; i++)
             {
-                Console.WriteLine(el);
+                dl.Insert(-1, A[i]);
             }
+            watch.Stop();
+            elapsedMs = watch.ElapsedMilliseconds;
+            Console.WriteLine("time for duoble linked list: " + elapsedMs);
+
+            watch = System.Diagnostics.Stopwatch.StartNew();
+            for (int i = 0; i < n; i++)
+            {
+                sl.Insert(A[i], -1);
+            }
+            watch.Stop();
+            elapsedMs = watch.ElapsedMilliseconds;
+            Console.WriteLine("time for linked list: " + elapsedMs);
         }
     }
 }
