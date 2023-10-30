@@ -5,12 +5,12 @@ namespace ConsoleApp4
 
     internal class Program
     {
-        public class Node
+        public class Node<T>
         {
-            public int data;
-            public Node left;
-            public Node right;
-            public Node(int value)
+            public T data;
+            public Node<T> left;
+            public Node<T> right;
+            public Node(T value)
             {
                 data = value;
                 left = null;
@@ -18,45 +18,46 @@ namespace ConsoleApp4
             }
         }
 
-        public class BinaryTree
+        public class BinaryTree<T>
         {
-            public Node root;
+            public Node<T> root;
             int size = 0;
 
             public int Count { get { return size; } }
+            IComparer<T> comparer = Comparer<T>.Default;
 
-            public void Add(int value)
+            public void Add(T value)
             {
                 if (root == null)
                 {
-                    root = new Node(value);
+                    root = new Node<T>(value);
                     return;
                 }
                 if (root.left == null || root.right == null)
                 {
-                    if (root.data > value)
+                    if (comparer.Compare(root.data, value) > 0)
                     {
-                        root.left = new Node(value);
+                        root.left = new Node<T>(value);
                         return;
 
                     }
-                    else if (root.data < value)
+                    else if (comparer.Compare(root.data, value) < 0)
                     {
-                        root.right = new Node(value);
+                        root.right = new Node<T>(value);
                         return;
                     }
                 }
 
                 var element = root;
-                var prevel = new Node(0);
+                var prevel = new Node<T>(default);
                 while (element != null)
                 {
                     prevel = element;
-                    if (element.data == value)
+                    if (comparer.Compare(element.data, value) == 0)
                     {
                         return;
                     }
-                    else if (element.data > value)
+                    else if (comparer.Compare(element.data, value) > 0)
                     {
                         element = element.left;
 
@@ -68,9 +69,9 @@ namespace ConsoleApp4
 
                 }
 
-                element = new Node(value);
+                element = new Node<T>(value);
 
-                if (prevel.data > value)
+                if (comparer.Compare(prevel.data, value) > 0)
                 {
                     prevel.left = element;
                 }else
@@ -81,7 +82,7 @@ namespace ConsoleApp4
 
             }
 
-            public int MinValueIterative()
+            public T MinValueIterative()
             {
                 var element = root.left;
                 while (element.left != null)
@@ -91,14 +92,14 @@ namespace ConsoleApp4
                 return element.data;
             }
 
-            public int MinValueRecursive()
+            public T MinValueRecursive()
             {
                 var element = root;
 
                 return MinValue(element).left.data;
             }
 
-            private Node MinValue(Node element)
+            private Node<T> MinValue(Node<T> element)
             {
                 if (element.left != null)
                 {
@@ -113,7 +114,7 @@ namespace ConsoleApp4
 
         static void Main(string[] args)
         {
-            BinaryTree bt = new BinaryTree();
+            BinaryTree<int> bt = new BinaryTree<int>();
             bt.Add(5);
             bt.Add(3);
             bt.Add(7);
