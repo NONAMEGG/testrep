@@ -1,132 +1,68 @@
-namespace ConsoleApp4
-{
-    using System.Collections;
-    using System.Linq.Expressions;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
+namespace ConsoleApp2
+{
     internal class Program
     {
-        public class Node<T>
-        {
-            public T data;
-            public Node<T> left;
-            public Node<T> right;
-            public Node(T value)
-            {
-                data = value;
-                left = null;
-                right = null;
-            }
-        }
-
-        public class BinaryTree<T>
-        {
-            public Node<T> root;
-            int size = 0;
-
-            public int Count { get { return size; } }
-            IComparer<T> comparer = Comparer<T>.Default;
-
-            public void Add(T value)
-            {
-                if (root == null)
-                {
-                    root = new Node<T>(value);
-                    return;
-                }
-                if (root.left == null || root.right == null)
-                {
-                    if (comparer.Compare(root.data, value) > 0)
-                    {
-                        root.left = new Node<T>(value);
-                        return;
-
-                    }
-                    else if (comparer.Compare(root.data, value) < 0)
-                    {
-                        root.right = new Node<T>(value);
-                        return;
-                    }
-                }
-
-                var element = root;
-                var prevel = new Node<T>(default);
-                while (element != null)
-                {
-                    prevel = element;
-                    if (comparer.Compare(element.data, value) == 0)
-                    {
-                        return;
-                    }
-                    else if (comparer.Compare(element.data, value) > 0)
-                    {
-                        element = element.left;
-
-                    }
-                    else
-                    {
-                        element = element.right;
-                    }
-
-                }
-
-                element = new Node<T>(value);
-
-                if (comparer.Compare(prevel.data, value) > 0)
-                {
-                    prevel.left = element;
-                }else
-                {
-                    prevel.right = element;
-                }
-
-
-            }
-
-            public T MinValueIterative()
-            {
-                var element = root.left;
-                while (element.left != null)
-                {
-                    element = element.left;
-                }
-                return element.data;
-            }
-
-            public T MinValueRecursive()
-            {
-                var element = root;
-
-                return MinValue(element).left.data;
-            }
-
-            private Node<T> MinValue(Node<T> element)
-            {
-                if (element.left != null)
-                {
-                    element = element.left;
-                    MinValue(element);
-                }
-                return element;
-
-            }
-
-        }
-
         static void Main(string[] args)
         {
-            BinaryTree<int> bt = new BinaryTree<int>();
-            bt.Add(5);
-            bt.Add(3);
-            bt.Add(7);
-            bt.Add(9);
-            bt.Add(1);
-            bt.Add(2);
-            bt.Add(6);
+            var dictList = new List<KeyValuePair<string, int>>();
 
-            Console.WriteLine(bt.MinValueIterative());
-            Console.WriteLine(bt.MinValueRecursive());
+            using (StreamReader sr = new StreamReader("C:\\Users\\student\\Desktop\\engwiki_ascii.txt"))
+            {
+                string line;
+                List<string> words = new List<string>();
+                while ((line = sr.ReadLine()) != null)
+                {
+                    List<string> strings = line.Split(' ').ToList<string>();
+
+                    foreach (string s1 in strings)
+                    {
+                        string s = s1.Split(',')[0];
+                        s = s.Split('.')[0];
+                        s = s.Split('!')[0];
+                        s = s.Split('?')[0];
+
+                        if (!words.Contains(s))
+                        {
+                            int ind = ~words.BinarySearch(s);
+
+                            var tempList = new List<string>();
+                            tempList.AddRange(words.GetRange(0, ind));
+                            tempList.Add(s);
+                            tempList.AddRange(words.GetRange(ind, words.Count - ind));
+                            words = tempList;
 
 
+                            dictList.Insert(ind, new KeyValuePair<string, int>(s, 1));
+                        }
+                        else
+                        {
+                            int ind = words.BinarySearch(s);
+                            dictList[ind] = new KeyValuePair<string, int>(dictList[ind].Key, dictList[ind].Value + 1);
+                        }
+                    }
+                }
+            }
+            using (StreamReader sr = new StreamReader("C:\\Users\\student\\Desktop\\check.txt"))
+            {
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    foreach (var s in dictList)
+                    {
+                        if (line == s.Key)
+                        {
+                            Console.WriteLine(s.Key + " : " + s.Value);
+                        }
+                    }
+                }
+            }
         }
     }
 }
