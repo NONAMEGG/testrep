@@ -5,15 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp2
+namespace FindeEntries
 {
     internal class Program
     {
+
+
         static void Main(string[] args)
         {
             var dictList = new List<KeyValuePair<string, int>>();
 
-            using (StreamReader sr = new StreamReader("C:\\Users\\student\\Desktop\\engwiki_ascii.txt"))
+            using (StreamReader sr = new StreamReader("engwiki_ascii.txt"))
             {
                 string line;
                 List<string> words = new List<string>();
@@ -49,7 +51,7 @@ namespace ConsoleApp2
                     }
                 }
             }
-            using (StreamReader sr = new StreamReader("C:\\Users\\student\\Desktop\\check.txt"))
+            using (StreamReader sr = new StreamReader("getWords.txt"))
             {
                 string line;
                 while ((line = sr.ReadLine()) != null)
@@ -58,7 +60,7 @@ namespace ConsoleApp2
                     {
                         if (line == s.Key)
                         {
-                            Console.WriteLine(s.Key + " : " + s.Value);
+                            Console.WriteLine(s.Key + ": " + s.Value);
                         }
                     }
                 }
