@@ -8,7 +8,7 @@ namespace FindeEntries
         {
             var dictList = new List<KeyValuePair<string, int>>();
 
-            using (StreamReader sr = new StreamReader("engwiki_ascii.txt"))
+            using (StreamReader sr = new StreamReader("C:\\Users\\TNV.22\\source\\repos\\FindeEntries\\FindeEntries\\txt.txt"))
             {
                 string line;
                 List<string> words = new List<string>();
@@ -22,29 +22,27 @@ namespace FindeEntries
                         s = s.Split('.')[0];
                         s = s.Split('!')[0];
                         s = s.Split('?')[0];
-
-                        if (!words.Contains(s))
+                        int ind = words.BinarySearch(s);
+                        if (ind < 0)
                         {
-                            int ind = ~words.BinarySearch(s);
-
-                            var tempList = new List<string>();
+                            ind = ~ind;
+/*                            var tempList = new List<string>();
                             tempList.AddRange(words.GetRange(0, ind));
                             tempList.Add(s);
                             tempList.AddRange(words.GetRange(ind, words.Count - ind));
-                            words = tempList;
-
+                            words = tempList;*/
+                            words.Insert(ind, s);
 
                             dictList.Insert(ind, new KeyValuePair<string, int>(s, 1));
                         }
                         else
                         {
-                            int ind = words.BinarySearch(s);
                             dictList[ind] = new KeyValuePair<string, int>(dictList[ind].Key, dictList[ind].Value + 1);
                         }
                     }
                 }
             }
-            using (StreamReader sr = new StreamReader("getWords.txt"))
+            using (StreamReader sr = new StreamReader("C:\\Users\\TNV.22\\source\\repos\\FindeEntries\\FindeEntries\\check.txt"))
             {
                 string line;
                 while ((line = sr.ReadLine()) != null)
