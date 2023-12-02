@@ -1,5 +1,6 @@
+using System;
 using System.Collections;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace SAOD9
 {
@@ -178,12 +179,12 @@ namespace SAOD9
         {
             public char key;
             public bool flag;
-            public List<TreeNode> children;
+            public LinkedArray<TreeNode> children;
             public int entries;
-            public TreeNode(char Key) 
+            public TreeNode(char Key)
             {
                 key = Key;
-                children = new List<TreeNode>();
+                children = new LinkedArray<TreeNode>();
             }
 
             public int LeafCount()
@@ -237,7 +238,7 @@ namespace SAOD9
                     }
                     else
                     {
-                        curr.children.Add(new TreeNode(ch));
+                        curr.children.PushBack(new TreeNode(ch));
                         curr = curr.children.Last();
                     }
                 }
@@ -262,8 +263,9 @@ namespace SAOD9
 
                     if (index >= 0)
                     {
-                        curr = curr.children[index]; 
-                    }else
+                        curr = curr.children[index];
+                    }
+                    else
                     {
                         return false;
                     }
@@ -311,7 +313,7 @@ namespace SAOD9
             }
 
         }
-    
+
 
         static void Main(string[] args)
         {
@@ -337,6 +339,7 @@ namespace SAOD9
                 else continue;
 
             }
+            Console.ReadLine();
         }
     }
 }
