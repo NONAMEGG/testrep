@@ -4,19 +4,17 @@
 
 template<typename T>
 slinkedlist<T>::slinkedlist() {
-	sentinel = new Node<T>();
-	sentinel->next = new Node<T>();
 	root = new Node<T>();
-	root->next = sentinel->next;
+	sentinel = root;
 }
 
 template<typename T>
 slinkedlist<T>::slinkedlist(const slinkedlist& other) {
 	sentinel = new Node<T>();
-	root.next = &sentinel;
+	root->next = sentinel;
 
-	Node<T>* current = other.root.next;
-	while (current != other.sentinel) {
+	Node<T>* current = other->root->next;
+	while (current != other->sentinel) {
 		push_back(current->data);
 		current = current->next;
 	}
@@ -26,13 +24,16 @@ slinkedlist<T>::slinkedlist(const slinkedlist& other) {
 template<typename T>
 slinkedlist<T>::~slinkedlist() {
 	clear();
+	delete sentinel->next;
+	delete sentinel;
+	delete root;
 }
 
 template<typename T>
 slinkedlist<T>& slinkedlist<T>::operator=(const slinkedlist& other) {
 	clear();
-	Node<T>* current = other.root->next;
-	while (current != other.sentinel->next) {
+	Node<T>* current = other->root->next;
+	while (current != other->sentinel->next) {
 		push_back(current->data);
 		current = current->next;
 	}
