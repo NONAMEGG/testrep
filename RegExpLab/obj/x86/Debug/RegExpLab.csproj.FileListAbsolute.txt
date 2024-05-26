@@ -1,0 +1,9 @@
+C:\Users\tyuut\OneDrive\Рабочий стол\RegExpLab\bin\Debug\CreateDB.sql
+C:\Users\tyuut\OneDrive\Рабочий стол\RegExpLab\bin\Debug\Dictionary.xml
+C:\Users\tyuut\OneDrive\Рабочий стол\RegExpLab\bin\Debug\RegExpLab.exe.config
+C:\Users\tyuut\OneDrive\Рабочий стол\RegExpLab\bin\Debug\RegExpLab.exe
+C:\Users\tyuut\OneDrive\Рабочий стол\RegExpLab\bin\Debug\RegExpLab.pdb
+C:\Users\tyuut\OneDrive\Рабочий стол\RegExpLab\obj\x86\Debug\RegExpLab.csproj.AssemblyReference.cache
+C:\Users\tyuut\OneDrive\Рабочий стол\RegExpLab\obj\x86\Debug\RegExpLab.csproj.CoreCompileInputs.cache
+C:\Users\tyuut\OneDrive\Рабочий стол\RegExpLab\obj\x86\Debug\RegExpLab.exe
+C:\Users\tyuut\OneDrive\Рабочий стол\RegExpLab\obj\x86\Debug\RegExpLab.pdb
